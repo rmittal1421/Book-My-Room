@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang='en'>
+  <head>
+    <meta charset='utf-8' />
+
+    <style>
+        #calendar {
+            max-width: 900px;
+	        margin: 10px auto;
+        }
+    </style>
+
+    <link href='https://use.fontawesome.com/releases/v5.0.6/css/all.css' rel='stylesheet'>
+    <link href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css' rel='stylesheet' />
+
+    <link href='../../node_modules/@fullcalendar/core/main.css' rel='stylesheet' />
+    <link href='../../node_modules/@fullcalendar/daygrid/main.css' rel='stylesheet' />
+    <link href='../../node_modules/@fullcalendar/timegrid/main.css' rel='stylesheet' />
+    <link href='../../node_modules/@fullcalendar/bootstrap/main.css' rel='stylesheet' />
+
+
+    <script src='../../node_modules/@fullcalendar/core/main.js'></script>
+    <script src='../../node_modules/@fullcalendar/daygrid/main.js'></script>
+    <script src='../../node_modules/@fullcalendar/timegrid/main.js'></script>
+    <script src='../../node_modules/@fullcalendar/bootstrap/main.js'></script>
+
+    <script>
+
+      document.addEventListener('DOMContentLoaded', function() {
+        var calendarEl = document.getElementById('calendar');
+
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            header: {
+                center: 'dayGridMonth, timeGridWeek, timeGridDay'
+            },
+
+            plugins: [ 'timeGrid', 'dayGrid', 'bootstrap' ],
+            defaultView: 'timeGridWeek',
+            themeSystem: 'bootstrap',
+            allDaySlot: false,
+            minTime: '07:00:00',
+            maxTime: '22:30:00',
+            nowIndicator: true,
+            height: 'auto',
+        });
+
+        calendar.render();
+      });
+
+    </script>
+  </head>
+  <body>
+
+    <div id='calendar'></div>
+
+  </body>
+</html>
