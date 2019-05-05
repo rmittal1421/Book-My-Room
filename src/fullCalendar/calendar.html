@@ -42,6 +42,16 @@
             maxTime: '22:30:00',
             nowIndicator: true,
             height: 'auto',
+            events: [
+              {
+                title: 'rmittal', // a property!
+                start: '2019-05-04T07:00:00', // a property!
+                end: '2019-05-04T09:00:00', // a property! ** see important note below about 'end' **
+                allDay: false
+                // startTime: '07:00:00',
+                // endTime: '09:00:00'
+              }
+            ]
         });
 
         calendar.render();

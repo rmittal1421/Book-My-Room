@@ -19,9 +19,9 @@ const UserSchema = new mongoose.Schema ({
 const User = mongoose.model ('User', UserSchema)
 
 // let user = new User ({
-//     userId: 'njindal',
+//     userId: 'vakansha',
 //     name: 'Raghav Mittal',
-//     available: false
+//     available: true
 // })
 
 // user.save().then(() => {
