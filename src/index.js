@@ -2,21 +2,27 @@ const request = require ('request')
 require ('./db/mongoose')
 const Booking = require ('./schema/booking')
 const User = require ('./schema/users')
+const express = require ('express')
+const path = require ('path')
 
-let day = 15
+const server = express()
+
+server.use(express.static(path.join(__dirname, 'public')))
+server.use(express.static(path.join(__dirname, '..')))
+
+let day = 22
 let month = 5
 let year = 2019
-let start_seconds = 32400 + 7200
-let end_seconds = 32400 + 3600 + 3600 + 7200
+let start_seconds = 32400
+let end_seconds = 32400 + 7200
 let userID
 let currentHour = start_seconds/3600
+userID = 'rmittal'
 
 User.findOne ({ available: true }).then((user) => {
     userID = user.userId
-    user.available = false
+    // user.available = false
     console.log (userID)
-    return user.save()
-}).then (() => {
     var formData = {
         name: 'Room booking',
         description: 'Study room for friends',
@@ -42,7 +48,7 @@ User.findOne ({ available: true }).then((user) => {
             'Content-Type': 'application/x-www-form-urlencoded'
         },
         url: 'http://roombooking.surrey.sfu.ca/edit_entry_handler.php',
-        // formData,
+        formData,
         method: 'POST'
     }, (err, res, body) => {
         console.log ('i am consoling')
@@ -66,10 +72,29 @@ User.findOne ({ available: true }).then((user) => {
         else {
             console.log ('Could not book the room')
         }
-    })
-}).catch (() => {
-    console.log ('No user available')
+}).catch((e) => {
+    console.log (e)
 })
+
+
+server.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+});
+
+server.get('/getEvents', async (req, res) => {
+    const events = await Booking.find({})
+    res.send(events)
+})
+
+server.listen(3000, () => {
+    console.log ('Server is running on port 3000')
+})
+
+// }).catch (() => {
+//     console.log ('No user available')
+// })
 
 // userID = 'rmittal'
 
