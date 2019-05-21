@@ -1,78 +1,87 @@
 <!DOCTYPE html>
 <html lang='en'>
-  <head>
-    <meta charset='utf-8' />
 
-    <!-- <style>
-        #calendar {
-            max-width: 900px;
-	        margin: 10px auto;
-        }
-    </style> -->
+<head>
+  <meta charset='utf-8' />
 
-    <link href='https://use.fontawesome.com/releases/v5.0.6/css/all.css' rel='stylesheet' type="text/css" />
-    <link href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css' rel='stylesheet'  type="text/css"/>
+  <style>
+    #calendar {
+      max-width: 900px;
+      margin: 10px auto;
+    }
+  </style>
 
-    <link href='/node_modules/@fullcalendar/core/main.css' rel='stylesheet'  type="text/css" />
-    <link href='/node_modules/@fullcalendar/daygrid/main.css' rel='stylesheet'  type="text/css" />
-    <link href='/node_modules/@fullcalendar/timegrid/main.css' rel='stylesheet'  type="text/css" />
-    <link href='/node_modules/@fullcalendar/bootstrap/main.css' rel='stylesheet'  type="text/css" />
+  <link href='https://use.fontawesome.com/releases/v5.0.6/css/all.css' rel='stylesheet' type="text/css" />
+  <link href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css' rel='stylesheet' type="text/css" />
+
+  <link href='/node_modules/@fullcalendar/core/main.css' rel='stylesheet' type="text/css" />
+  <link href='/node_modules/@fullcalendar/daygrid/main.css' rel='stylesheet' type="text/css" />
+  <link href='/node_modules/@fullcalendar/timegrid/main.css' rel='stylesheet' type="text/css" />
+  <link href='/node_modules/@fullcalendar/bootstrap/main.css' rel='stylesheet' type="text/css" />
 
 
-    <script src='/node_modules/@fullcalendar/core/main.js'></script>
-    <script src='/node_modules/@fullcalendar/daygrid/main.js'></script>
-    <script src='/node_modules/@fullcalendar/timegrid/main.js'></script>
-    <script src='/node_modules/@fullcalendar/bootstrap/main.js'></script>
+  <script src='/node_modules/@fullcalendar/core/main.js'></script>
+  <script src='/node_modules/@fullcalendar/daygrid/main.js'></script>
+  <script src='/node_modules/@fullcalendar/timegrid/main.js'></script>
+  <script src='/node_modules/@fullcalendar/bootstrap/main.js'></script>
 
-    <script
-        src="https://code.jquery.com/jquery-3.4.1.min.js"
-        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
-        crossorigin="anonymous"></script>
-    
-  </head>
-  <body>
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+    integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 
-    <div id='calendar'></div>
+</head>
 
-    <script>
+<body>
 
-        $.getJSON('http://localhost:3000/getEvents', (events) => {
-          var calendarEl = document.getElementById('calendar')
+  <div id='calendar'></div>
 
-          var calendar = new FullCalendar.Calendar(calendarEl, {
-              header: {
-                  center: 'dayGridMonth, timeGridWeek, timeGridDay'
-              },
+  <script>
+    function formatTitle(name, room) {
+      return `ID: ${name}\nRoom No: ${room}`
+    }
 
-              plugins: [ 'timeGrid', 'dayGrid', 'bootstrap' ],
-              defaultView: 'timeGridWeek',
-              themeSystem: 'bootstrap',
-              allDaySlot: false,
-              minTime: '07:00:00',
-              maxTime: '22:30:00',
-              nowIndicator: true,
-              height: 'auto',
-              events: 
-              
-              
-              
-              
-              [
-                {
-                  title: , // a property!
-                  start: '2019-05-04T07:00:00', // a property!
-                  end: '2019-05-04T09:00:00', // a property! ** see important note below about 'end' **
-                  allDay: false
-                  // startTime: '07:00:00',
-                  // endTime: '09:00:00'
-                }
-              ]
-          });
+    function formatDate(date) {
+      let year = date.getFullYear()
+      let month = date.getMonth() + 1
+      let day = date.getDate()
+      let hour = date.getHours()
+      let dateString =
+        `${year}-${(month<10)?'0':''}${month}-${(day<10)?'0':''}${day}T${(hour<10)?'0':''}${hour}:00:00`
+      // console.log(dateString)
+      return dateString
+    }
 
-          calendar.render();
+    $.getJSON('http://localhost:3000/getEvents', (eventsList) => {
+      let events = []
+      eventsList.forEach(event => {
+        events.push({
+          title: formatTitle(event.name, event.room),
+          start: formatDate(new Date(event.start_time)),
+          end: formatDate(new Date(event.end_time)),
+          allDay: false
         })
-        
-  
-      </script>
-  </body>
+      })
+      console.log(events)
+      var calendarEl = document.getElementById('calendar')
+
+      var calendar = new FullCalendar.Calendar(calendarEl, {
+        header: {
+          center: 'dayGridMonth, timeGridWeek, timeGridDay'
+        },
+
+        plugins: ['timeGrid', 'dayGrid', 'bootstrap'],
+        defaultView: 'timeGridWeek',
+        themeSystem: 'bootstrap',
+        allDaySlot: false,
+        minTime: '07:00:00',
+        maxTime: '22:30:00',
+        nowIndicator: true,
+        height: 'auto',
+        timeZone: 'local',
+        events
+      });
+      calendar.render();
+    })
+  </script>
+</body>
+
 </html>
