@@ -7,8 +7,12 @@ const path = require("path");
 var cron = require("cron");
 
 const server = express();
+const port = process.env.PORT;
 
-server.use(express.static(path.join(__dirname, "public")));
+server.use(express.static(path.join(__dirname, 'public'), {
+    extensions: ['html']
+}));
+
 server.use(express.static(path.join(__dirname, "..")));
 
 server.use(function (req, res, next) {
@@ -26,30 +30,26 @@ server.get("/getEvents", async (req, res) => {
 });
 
 function postBookingRequest() {
-    let dateObj = new Date();
+    let dateObj = new Date(Date.now() + 12096e5);
     let day = dateObj.getDate();
-    let month = dateObj.getMonth();
+    let month = dateObj.getMonth() + 1;
     let year = dateObj.getFullYear();
-    let start_seconds = dateObj.getHours() * 3600;
-    let end_seconds = start_seconds + 7200;
-    let userID;
     let currentHour = dateObj.getHours();
-
-    // let day = 30;
-    // let month = 5;
-    // let year = 2019;
-    // let start_seconds = 11 * 3600;
-    // let end_seconds = start_seconds + 7200;
-    // let userID;
-    // let currentHour = start_seconds / 3600;
+    let start_seconds = currentHour * 3600;
+    let end_seconds = start_seconds + ((currentHour == 21) ? 1800 : 7200);
+    let minute = (currentHour == 21) ? 30 : 0;
+    let endHour = (currentHour == 21) ? 21 : (currentHour + 2);
+    let userID;
+    let area = 1;
 
     User.findOne({
             available: true
         })
         .then(user => {
+            if (!user) {
+                throw new Error('No user available')
+            }
             userID = user.userId;
-            // user.available = false
-            console.log(userID);
             var formData = {
                 name: "Room booking",
                 description: "Study room for friends",
@@ -61,17 +61,18 @@ function postBookingRequest() {
                 end_month: month,
                 end_year: year,
                 end_seconds,
-                area: 1,
-                rooms: [1],
+                area,
+                //While changing the room number, remember to change it in the returl too.
+                rooms: [10],
                 type: "E",
-                returl: `http://roombooking.surrey.sfu.ca/day.php?year=${year}&month=${month}&day=${day}&area=1&room=1`,
+                returl: `http://roombooking.surrey.sfu.ca/day.php?year=${year}&month=${month}&day=${day}&area=${area}&room=10`,
                 create_by: userID,
                 save_button: "Save"
             };
             request({
                     headers: {
                         Cookie: `_ga=GA1.2.316387562.1552265317; _gid=GA1.2.1030685302.1552265317; FAS_MRBS=${userID}`,
-                        Referer: `http://roombooking.surrey.sfu.ca/edit_entry.php?area=1&room=1&hour=${currentHour}&minute=00&year=${year}&month=${month}&day=${day}`,
+                        Referer: `http://roombooking.surrey.sfu.ca/edit_entry.php?area=${area}&room=10&hour=${currentHour}&minute=${minute}&year=${year}&month=${month}&day=${day}`,
                         "Content-Type": "application/x-www-form-urlencoded"
                     },
                     url: "http://roombooking.surrey.sfu.ca/edit_entry_handler.php",
@@ -82,23 +83,27 @@ function postBookingRequest() {
                     if (err) {
                         throw Error(err);
                     } else if (res.statusCode === 302) {
-                        console.log("Booking confirmed");
+                        user.available = false;
+                        user.save().then((res) => {
+                            console.log(res)
+                        }).catch((e) => {
+                            console.log(e)
+                        })
+
                         const newBooking = {
                             name: userID,
-                            room: 3202,
-                            start_time: new Date(year, month - 1, day, currentHour, 0, 0, 0),
-                            end_time: new Date(year, month - 1, day, currentHour + 2, 0, 0, 0)
+                            room: process.env.ROOM_NO,
+                            start_time: new Date(year, month, day, currentHour, 0, 0, 0),
+                            end_time: new Date(year, month, day, endHour, minute, 0, 0)
                         };
 
                         const bookingEntry = new Booking(newBooking);
                         bookingEntry
                             .save()
                             .then(() => {
-                                console.log("coming here");
                                 console.log(bookingEntry);
                             })
                             .catch(e => {
-                                console.log("not coming here");
                                 console.log(e);
                             });
                     } else {
@@ -114,7 +119,7 @@ function postBookingRequest() {
 
 var CronJob = cron.CronJob;
 
-new CronJob("* * 7-19/2 * * *", function () {
+new CronJob("0 10 7-21/2 * * *", function () {
     postBookingRequest();
 }).start();
 
@@ -140,6 +145,6 @@ new CronJob("0 0 0 * * *", () => {
     })
 }).start();
 
-server.listen(3000, () => {
-    console.log("Server is running on port 3000");
+server.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
 });

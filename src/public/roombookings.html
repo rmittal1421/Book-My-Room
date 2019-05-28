@@ -4,6 +4,8 @@
 <head>
   <meta charset='utf-8' />
 
+  <title>Room Schedule</title>
+
   <style>
     #calendar {
       max-width: 900px;
@@ -41,12 +43,13 @@
 
     function formatDate(date) {
       let year = date.getFullYear()
-      let month = date.getMonth() + 1
+      let month = date.getMonth()
       let day = date.getDate()
       let hour = date.getHours()
+      let minute = date.getMinutes()
       let dateString =
-        `${year}-${(month<10)?'0':''}${month}-${(day<10)?'0':''}${day}T${(hour<10)?'0':''}${hour}:00:00`
-      // console.log(dateString)
+        `${year}-${(month<10)?'0':''}${month}-${(day<10)?'0':''}${day}T${(hour<10)?'0':''}${hour}:${(minute==30)?minute:'00'}:00`
+      console.log(dateString)
       return dateString
     }
 
@@ -60,7 +63,6 @@
           allDay: false
         })
       })
-      console.log(events)
       var calendarEl = document.getElementById('calendar')
 
       var calendar = new FullCalendar.Calendar(calendarEl, {
@@ -73,11 +75,13 @@
         themeSystem: 'bootstrap',
         allDaySlot: false,
         minTime: '07:00:00',
-        maxTime: '22:30:00',
+        maxTime: '22:00:00',
         nowIndicator: true,
         height: 'auto',
         timeZone: 'local',
-        events
+        displayEventEnd: true,
+        events,
+        eventColor: '#87ceeb'
       });
       calendar.render();
     })
