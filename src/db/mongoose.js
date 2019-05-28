@@ -1,7 +1,7 @@
-const mongoose = require ('mongoose')
-const Booking = require ('../schema/booking')
+const mongoose = require('mongoose')
+const Booking = require('../schema/booking')
 
-mongoose.connect('mongodb://127.0.0.1:27017/booking-info', {
+mongoose.connect(process.env.DB_URL, {
     useNewUrlParser: true,
     useCreateIndex: true,
 })
