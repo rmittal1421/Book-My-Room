@@ -24,6 +24,21 @@ server.use(function (req, res, next) {
     next();
 });
 
+server.use(express.json())
+
+server.post('/createUser', async (req, res) => {
+    await new User(req.body).save()
+    res.send('User created')
+})
+
+server.get('/users', async (req, res) => {
+    let users = await User.find({
+        available: true
+    })
+
+    res.json(users);
+})
+
 server.get('/', (req, res) => {
     res.send('roombookings');
 })
@@ -123,7 +138,7 @@ function postBookingRequest() {
 
 var CronJob = cron.CronJob;
 
-new CronJob("0 15 7-21/2 * * *", function () {
+new CronJob("0 0 7-21/2 * * *", function () {
     postBookingRequest();
 }).start();
 
