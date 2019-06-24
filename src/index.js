@@ -25,7 +25,7 @@ server.use(function (req, res, next) {
 });
 
 server.get('/', (req, res) => {
-    res.send('roombookings.html');
+    res.send('roombookings');
 })
 
 server.get("/getEvents", async (req, res) => {
@@ -123,7 +123,7 @@ function postBookingRequest() {
 
 var CronJob = cron.CronJob;
 
-new CronJob("0 0 7-21/2 * * *", function () {
+new CronJob("0 15 7-21/2 * * *", function () {
     postBookingRequest();
 }).start();
 
