@@ -33,7 +33,7 @@ function makeARandomBookingEntry() {
             console.log(bookingEntry);
         })
         .catch(e => {
-            console.log(e);
+            console.log(e)
         });
 }
 
@@ -61,7 +61,7 @@ function createAUser(id) {
 
 //Calling function (required)
 makeARandomBookingEntry()
-deleteAllBookingEntries()
+// deleteAllBookingEntries()
 
-updateUsers()
-createAUser(process.env.USER_ID)
+// updateUsers()
+// createAUser(process.env.USER_ID)

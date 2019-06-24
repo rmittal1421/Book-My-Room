@@ -53,7 +53,7 @@
       return dateString
     }
 
-    $.getJSON(`${process.env.APP_URL}/getEvents`, (eventsList) => {
+    $.getJSON(`/getEvents`, (eventsList) => {
       let events = []
       eventsList.forEach(event => {
         events.push({
